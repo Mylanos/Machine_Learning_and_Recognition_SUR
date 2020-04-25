@@ -1,31 +1,30 @@
-# some time later...
 import imutils
 import matplotlib.pyplot as plt
 from prettytable import PrettyTable
-from sklearn import svm
 from glob import glob
-from skimage.io import imread
 from skimage.feature import hog
-from skimage import data, exposure
-from sklearn.svm import LinearSVC
+from skimage import exposure
 from sklearn.externals import joblib
-import numpy as np
 import cv2
-from skimage.transform import rescale,resize, downscale_local_mean
-from scipy import ndimage, misc
-import pickle
+import json
 
+with open('../config.json') as config_file:
+    data = json.load(config_file)
 
-min_wdw_sz = [100, 40]
-step_size = [10, 10]
-orientations =  8
-pixels_per_cell = [16, 16]
-cells_per_block = [4, 4]
-visualize =  True
-transform_sqrt = True
-visualize_test =  True
-flag_print = False
-flag_rotate = True
+orientations =  data['orientations']
+pixels_per_cell = data['pixels_per_cell']
+cells_per_block = data['cells_per_block']
+visualize =  bool(data['visualize'])
+transform_sqrt = bool(data['transform_sqrt'])
+visualize_test = bool(data['visualize_test'])
+flag_print = bool(data['flag_print'])
+flag_rotate = bool(data['flag_rotate'])
+non_target_train_f = data["non_target_train_f"]
+target_train_f = data["target_train_f"]
+image_classifier = data["image_classifier"]
+eval_f = data["eval_f"]
+result = data['image_classifier_result']
+
 
 
 def png2fea(dir_name):
@@ -52,24 +51,17 @@ def png2fea(dir_name):
 
 
 def evauluate(path,model):
+    count = 0
     names  = []
     scores = []
     labels = []
     datas = []
     for image in path.keys():
-        print("Image ",image)
+        print("Evaluating image ",image.split('\\')[-1])
 
         image_ = path[image]
-
         fd , hog_image  = hog(image_, orientations, pixels_per_cell, cells_per_block, visualize=visualize,transform_sqrt=transform_sqrt)
-        #fd, hog_image = hog(image_, orientations=8, pixels_per_cell=(16, 16),
-        #          cells_per_block=(1, 1), visualize=True, multichannel=False)
 
-
-
-
-        #wprint(fd.size)
-        #np.append(datas,fd)
         if flag_print:
             fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
             ax1.axis('off')
@@ -84,38 +76,39 @@ def evauluate(path,model):
             plt.show()
 
         datas.append(fd)
-        label = model.predict(fd.reshape(1, -1))[0]
+        #label = model.predict(fd.reshape(1, -1))[0]
+        label = int((model.predict_proba(fd.reshape(1, -1))[:, 1] >= 0.29).astype(bool))
         score = model.predict_proba(fd.reshape(1, -1))
+        score = str('{0:.0%}'.format (score[0][1]))
+
         if label == 0 :
-            score = str(score[0][0]) +"%"
+            #score = str(score[0][0]) + "%"
+            pass
         else:
-            score = str(score[0][1]) + "%"
-        names.append(image)
+            count+=1
+
+        names.append(image.split('\\')[-1])
         labels.append(label)
         scores.append(score)
-        #print("finishedimage", image)
+        print("Finished image", image.split('\\')[-1])
 
     t = PrettyTable()
     t.add_column("Names",names)
     t.add_column("Labels",labels)
     t.add_column("Scores",scores)
     print(t)
-
-
-
+    file = open(result,'w')
+    file.write(t.get_string())
+    file.close()
+    print(count)
 
 
 
 
 
 # load the model from disk
-loaded_model = joblib.load("../svm.model")
-non_target_dev = png2fea('../data/non_target_dev')
-target_dev = png2fea('../data/target_dev')
-eval = png2fea('../data/eval')
-
-evauluate(target_dev,loaded_model)
-evauluate(non_target_dev,loaded_model)
+loaded_model = joblib.load(image_classifier)
+eval = png2fea(eval_f)
 evauluate(eval,loaded_model)
 
 

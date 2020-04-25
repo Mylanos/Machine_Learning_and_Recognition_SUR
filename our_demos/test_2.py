@@ -92,15 +92,6 @@ def nms(detections, threshold=.5):
 
 
 
-min_wdw_sz = [100, 40]
-step_size = [10, 10]
-orientations =  9
-pixels_per_cell = [5, 5]
-cells_per_block = [3, 3]
-visualize =  False
-transform_sqrt = True
-visualize_test =  True
-
 
 
 def png2fea(dir_name):

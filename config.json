@@ -1,0 +1,18 @@
+{
+  "orientations":  8,
+  "pixels_per_cell" : [16, 16],
+  "cells_per_block" : [4, 4],
+  "visualize":1,
+  "transform_sqrt": 1,
+  "visualize_test":1,
+  "flag_print": 0,
+  "flag_rotate": 1,
+  "non_target_train_f": "../data/non_target_train",
+  "target_train_f" : "../data/target_train",
+  "non_target_dev_f": "../data/non_target_dev",
+  "target_dev_f" : "../data/target_dev",
+  "eval_f" : "../data/eval",
+  "image_classifier_result": "../result/image_linear.txt",
+  "image_classifier" : "../models/image_classifier.model"
+
+}
