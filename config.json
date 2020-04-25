@@ -13,6 +13,12 @@
   "target_dev_f" : "../data/target_dev",
   "eval_f" : "../data/eval",
   "image_classifier_result": "../result/image_linear.txt",
-  "image_classifier" : "../models/image_classifier.model"
+  "image_classifier" : "../models/image_classifier.model",
 
+  "audio_classifier" : "../models/audio_classifier.h5",
+  "data_folder" : "../data",
+  "flag_extract_eval_features" : 0,
+  "eval_features_csv_f" : "../features/dataset_eval2.csv",
+  "audio_classifier_result": "../result/audio_NN_MLP",
+  "target" : "m429"
 }

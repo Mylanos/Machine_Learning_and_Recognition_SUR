@@ -40,7 +40,7 @@ def png2fea(dir_name):
     """
     features = {}
     for f in glob(dir_name + '/*.png'):
-        f = f.replace("/", "\\")
+       # f = f.replace("/", "\\")
         print('Processing file: ', f)
         image = cv2.imread(f)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
