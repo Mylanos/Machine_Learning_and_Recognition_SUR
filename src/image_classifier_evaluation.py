@@ -56,6 +56,7 @@ def evauluate(path,model):
     scores = []
     labels = []
     datas = []
+    table = {}
     for image in path.keys():
         print("Evaluating image ",image.split('\\')[-1])
 
@@ -79,27 +80,44 @@ def evauluate(path,model):
         #label = model.predict(fd.reshape(1, -1))[0]
         label = int((model.predict_proba(fd.reshape(1, -1))[:, 1] >= 0.29).astype(bool))
         score = model.predict_proba(fd.reshape(1, -1))
-        score = str('{0:.0%}'.format (score[0][1]))
+        #score = str('{0:.0%}'.format (score[0][1]))
 
         if label == 0 :
-            #score = str(score[0][0]) + "%"
+            score = score[0][0] 
             pass
         else:
             count+=1
+            score = score[0][1] 
 
-        names.append(image.split('\\')[-1])
+
+        table[image.split('/')[-1].split('.')[0]] = (label, score )
+        names.append( image.split('/')[-1].split('.')[0])
         labels.append(label)
         scores.append(score)
-        print("Finished image", image.split('\\')[-1])
-
-    t = PrettyTable()
-    t.add_column("Names",names)
-    t.add_column("Labels",labels)
-    t.add_column("Scores",scores)
-    print(t)
+        print("Finished image", image.split('/')[-1].split('.')[0] )
+    
     file = open(result,'w')
-    file.write(t.get_string())
+    print("\n---------\nSearched person is in: ")
+    for i in sorted(table):
+        values = table[i]
+
+        message = str(i) + " " + str(values[1]) + " " + str(values[0])+ "\n"
+        if(values[0] == 1 ):
+            print(i,end=', ')
+        file.write(message)
+    print(" ")
     file.close()
+
+
+    #t = PrettyTable()
+    #t.add_column("Names",names)
+    #t.add_column("Labels",labels)
+    #t.add_column("Scores",scores)
+    #print(t)
+
+
+
+    
     print(count)
 
 
