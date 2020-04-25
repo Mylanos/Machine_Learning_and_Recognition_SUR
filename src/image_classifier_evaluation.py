@@ -34,7 +34,7 @@ def png2fea(dir_name):
     """
     features = {}
     for f in glob(dir_name + '/*.png'):
-        f = f.replace("/", "\\")
+        #f = f.replace("/", "\\")
         print('Processing file: ', f)
         # features[f] = imread(f,as_gray=False).resize(800,400)
         image = cv2.imread(f)
