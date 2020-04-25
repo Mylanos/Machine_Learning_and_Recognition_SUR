@@ -23,7 +23,6 @@ from sklearn.preprocessing import MinMaxScaler
 import subprocess
 
 
-print('hello')
 with open('../config.json') as config_file:
     data = json.load(config_file)
 
@@ -84,10 +83,6 @@ def parse_audio_files(directory):
     return sound_files
 
 
-# get evaluating data
-eval_files = parse_audio_files(eval_folder)
-
-
 # extracting features from audio files using librosa library
 # features are stored in csv 'dataset_file'
 def get_features(sound_files, dataset_file):
@@ -145,55 +140,26 @@ def get_set_of_data(searched_person, dataset_file):
     return train_data, train_labels, person_list
 
 
-if eval_extract_flag:
-    get_features(eval_files, eval_features_csv)
-
-# testing data(unseen)
-Eval_data, Eval_labels, Eval_list = get_set_of_data(target, eval_features_csv)
-
-
 # predicts if each record in Data is target or non_target
 # Data - records of audio features
 # List - list of names each representing one recording
-def get_predictions(data, List):
+def get_predictions(data, List, table):
     scaler = MinMaxScaler()
     scaler.fit(data)
     scaled_data = scaler.transform(data)
     # returns hard decision 0 or 1
-    print("Predicting...")
     predictions = model.predict_classes(scaled_data, verbose=2, batch_size=len(data))
     # return probabilities for each class
     probabilities = model.predict_proba(scaled_data, verbose=2, batch_size=len(data))
 
-    results = []
     for i in range(len(data)):
         # pick probability with higher chance
         if probabilities[i, 1] > 0.5:
             probability = probabilities[i, 1]
         else:
             probability = probabilities[i, 0]
-        results.append(str(List[i]) + " " + str(probability) + " " + str(predictions[i]) + "\n")
-
-    with open(result_file, "w") as results_file:
-        # sort according to eval order
-        for i in sorted(results):
-            results_file.write(i)
-    print("Done!")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        table[List[i]].append(probability)
+        table[List[i]].append(predictions[i])
 
 
 def png2fea(dir_name):
@@ -276,32 +242,29 @@ def evauluate(path,model):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 loaded_model = joblib.load(image_classifier)
-model = load_model('../models/audio_classifier.h5')
-print('hello')
 
 eval = png2fea(eval_f)
 table = evauluate(eval,loaded_model)
 
 
+# get evaluating data
+eval_files = parse_audio_files(eval_folder)
 
+# if flag is set extract features from files
+if eval_extract_flag:
+    get_features(eval_files, eval_features_csv)
 
+# testing data(unseen)
+eval_data, eval_labels, eval_list = get_set_of_data(target, eval_features_csv)
 
+#load model
+model = load_model(audio_classifier)
+
+# Execute predictions on data with loaded model
+get_predictions(eval_data, eval_list, table)
+
+print(table)
 
 
 
