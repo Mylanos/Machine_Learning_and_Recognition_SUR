@@ -184,7 +184,6 @@ def png2fea(dir_name):
 
 
 def evauluate(path,model):
-    count = 0
     names  = []
     scores = []
     labels = []
@@ -212,14 +211,14 @@ def evauluate(path,model):
         datas.append(fd)
         #label = model.predict(fd.reshape(1, -1))[0]
         label = int((model.predict_proba(fd.reshape(1, -1))[:, 1] >= 0.29).astype(bool))
-        score = model.predict_proba(fd.reshape(1, -1))[0][1]
+        score = model.predict_proba(fd.reshape(1, -1))
         #score = str('{0:.0%}'.format (score[0][1]))
 
         if label == 0 :
-            #score = str(score[0][0]) + "%"
+            score = score[0][0]
             pass
         else:
-            count+=1
+            score = score[0][1]
 
         
         names.append(image.split('/')[-1].split('.')[0] )
