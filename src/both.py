@@ -39,6 +39,7 @@ target_train_f = data["target_train_f"]
 image_classifier = data["image_classifier"]
 eval_f = data["eval_f"]
 result = data['image_classifier_result']
+both_result = data ["both_result_f"]
 
 
 
@@ -263,11 +264,39 @@ model = load_model(audio_classifier)
 # Execute predictions on data with loaded model
 get_predictions(eval_data, eval_list, table)
 
-print(table)
+#print(table)
+
+file = open(both_result,'w')
 
 
+for i in sorted(table):
+    values = table[i]
+    round_percent = 0
+    decision = 0 
 
 
+    image_perc = values[0]
+    image_deci = values[1]
+
+    sound_perc = values[2]
+    sound_deci = values[3]
+    if sound_deci != image_deci:
+        treshold = abs(sound_perc-image_perc)
+        if( treshold > 30 ):
+            if sound_perc > image_perc: 
+                decision = sound_deci
+            if sound_perc < image_perc:
+                decision = image_deci
+    else:
+        decision = sound_deci
+
+    round_percent = (image_perc+sound_perc)/2
+    message = str(i) + " " + str(round_percent) + " " + str(decision) +"\n"
+    file.write(message)
+    #print(i,round_percent,decision)
+
+print(" ")
+file.close()
 
 
 
