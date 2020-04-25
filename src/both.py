@@ -282,11 +282,15 @@ for i in sorted(table):
     sound_deci = values[3]
     if sound_deci != image_deci:
         treshold = abs(sound_perc-image_perc)
-        if( treshold > 30 ):
+        if( treshold > 25 ):
             if sound_perc > image_perc: 
                 decision = sound_deci
             if sound_perc < image_perc:
                 decision = image_deci
+
+        else:
+            decision = sound_deci
+
     else:
         decision = sound_deci
 
