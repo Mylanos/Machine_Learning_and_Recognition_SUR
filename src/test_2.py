@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from skimage.io import imread
 from skimage.feature import hog
 from sklearn.svm import LinearSVC
+import pickle
 from sklearn.externals import joblib
 import cv2
 from skimage.transform import rescale,resize, downscale_local_mean
@@ -156,10 +157,10 @@ clf.fit(data, labels)
 right_result_count = 0
 count = 0
 for i in dev_data:
-    try:
-        result = clf.predict(i.reshape(1, -1))
-    except ValueError:
-        result = [-1]
+    #try:
+    result = clf.predict(i.reshape(1, -1))
+    #except ValueError:
+    #result = [-1]
     print(result, right_result[count] )
     if ( result[0] == right_result[count] ):
         right_result_count +=1
@@ -183,7 +184,7 @@ exit()
 
 def sliding_window(image, window_size, step_size):
 """
-    """
+"""
     This function returns a patch of the input image `image` of size equal
     to `window_size`. The first image returned top-left co-ordinates (0, 0)
     and are increment in both x and y directions by the `step_size` supplied.
@@ -198,10 +199,12 @@ def sliding_window(image, window_size, step_size):
     * x is the top-left x co-ordinate
     * y is the top-left y co-ordinate
     * im_window is the sliding window image
-    """
+"""
+"""
     for y in range(0, image.shape[0], step_size[1]):
         for x in range(0, image.shape[1], step_size[0]):
             yield (x, y, image[y:y + window_size[1], x:x + window_size[0]])
+"""
 """
 
 
