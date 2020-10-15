@@ -1,0 +1,1 @@
+Dokumentácia je zatial v README.txt podľa zadania.
